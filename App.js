@@ -14,8 +14,8 @@ const App = () => {
 
   return (
     <>
-      {/* <RegistrationScreen /> */}
-      <LoginScreen />
+      <RegistrationScreen />
+      {/* <LoginScreen /> */}
     </>
   );
 };
