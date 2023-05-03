@@ -1,27 +1,30 @@
 import { StatusBar } from "expo-status-bar";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  TouchableWithoutFeedback,
-  View,
+  Image,
   ImageBackground,
   StyleSheet,
   Text,
   TextInput,
+  View,
+  TouchableWithoutFeedback,
   TouchableOpacity,
-  Platform,
   KeyboardAvoidingView,
+  Platform,
   Keyboard,
 } from "react-native";
 
 const initialState = {
+  login: "",
   email: "",
   password: "",
 };
 
-const LoginScreen = () => {
+const RegistrationScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  const [passwordSecured, setPasswordSecured] = useState(true);
 
   const keyboardHide = () => {
     setIsKeyboardVisible(false);
@@ -50,45 +53,66 @@ const LoginScreen = () => {
             <View
               style={{
                 ...styles.form_container,
-                marginBottom: isKeyboardVisible ? -250 : 0,
+                marginBottom: isKeyboardVisible ? -170 : 0,
               }}
             >
-              <Text style={styles.text}>login</Text>
-
-              <View>
+              <Text style={styles.text}>Registration</Text>
+              <Image
+                source={require("../../assets/photo.png")}
+                style={styles.imgAvatar}
+                contentFit="cover"
+                transition={1000}
+              />
+              <View style={styles.containerInput}>
                 <TextInput
                   style={styles.input}
-                  // activeStyle={styles.input_active}
+                  placeholder="login"
+                  value={state.login}
+                  onFocus={() => setIsKeyboardVisible(true)}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, login: value }))
+                  }
+                  require
+                />
+              </View>
+              <View style={styles.containerInput}>
+                <TextInput
+                  style={styles.input}
                   placeholder="Email address"
                   value={state.email}
-                  onFocus={() => setIsKeyboardVisible(true)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
                   }
+                  require
+                  onFocus={() => setIsKeyboardVisible(true)}
                 />
               </View>
-              <View>
+              <View style={styles.containerInput}>
                 <TextInput
-                  style={{ ...styles.input, marginBottom: 43 }}
+                  style={styles.input}
                   placeholder="Password"
-                  onFocus={() => setIsKeyboardVisible(true)}
                   value={state.password}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, password: value }))
                   }
                   secureTextEntry={true}
+                  require
+                  onFocus={() => setIsKeyboardVisible(true)}
                 />
               </View>
-
               <TouchableOpacity
                 activeOpacity={0.7}
                 style={styles.btn}
                 onPress={handleSubmit}
               >
-                <Text style={styles.btnText}>Sign in</Text>
+                <Text style={styles.btnText}>Register</Text>
               </TouchableOpacity>
+
               <Text style={styles.textSign}>
-                Don't have an account? Register
+                Already have an account?{" "}
+                <Text onPress={() => navigation.navigate("Login")}>
+                  Sign in
+                </Text>
               </Text>
             </View>
           </KeyboardAvoidingView>
@@ -98,7 +122,8 @@ const LoginScreen = () => {
     </TouchableWithoutFeedback>
   );
 };
-export default LoginScreen;
+
+export default RegistrationScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -117,22 +142,36 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     backgroundColor: "#ffffff",
-
     paddingHorizontal: 16,
+    alignItems: "center",
+    justifyContent: "center",
   },
+
+  imgAvatar: {
+    position: "absolute",
+    width: 120,
+    height: 120,
+
+    top: -60,
+
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+  },
+  containerInput: {
+    width: "100%",
+  },
+
   text: {
     fontFamily: "R-medium",
     fontWeight: 500,
     fontSize: 30,
     lineHeight: 35,
-    textAlign: "center",
     letterSpacing: 0.01,
 
     color: "#212121",
-    marginTop: 32,
+    marginTop: 92,
     marginBottom: 33,
   },
-
   input: {
     backgroundColor: "#f6f6f6",
     borderWidth: 1,
@@ -144,12 +183,18 @@ const styles = StyleSheet.create({
     height: 50,
   },
 
+  // input_active: {
+  //   backgroundColor: "#ffffff",
+  //   borderColor: "#FF6C00",
+  // },
+
   btn: {
     marginBottom: 16,
 
     height: 51,
     backgroundColor: "#ff6C00",
     borderRadius: 100,
+    textAlign: "center",
   },
   btnText: {
     fontFamily: "R-regular",
@@ -169,7 +214,7 @@ const styles = StyleSheet.create({
     fontWeight: 400,
     fontSize: 16,
     lineHeight: 19,
-    marginBottom: 144,
+    marginBottom: 78,
     color: "#1b4371",
     textAlign: "center",
   },
