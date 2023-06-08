@@ -1,22 +1,20 @@
-import React from "react";
 import { View, StyleSheet } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-// import { MaterialIcons } from "@expo/vector-icons";
-// <MaterialIcons name="logout" size={24} color="black" />;
 
-const MapScreen = () => {
+const MapScreen = ({ route }) => {
+  const { latitude, longitude } = route.params.location;
   return (
     <View style={styles.container}>
       <MapView
         style={{ flex: 1 }}
         initialRegion={{
-          latitude: 12,
-          longitude: 32,
-          latitudeDelta: 0.0922,
+          latitude,
+          longitude,
+          latitudeDelta: 0.09,
           longitudeDelta: 0.0421,
         }}
       >
-        <Marker coordinate={{ latitude: 12, longitude: 32 }} />
+        <Marker coordinate={{ latitude, longitude }} />
       </MapView>
     </View>
   );

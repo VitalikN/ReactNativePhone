@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import { View, TouchableOpacity, Text, Image, StyleSheet } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  Image,
+  TextInput,
+  StyleSheet,
+} from "react-native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
 
+import { EvilIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
 const CreatePostsScreen = ({ navigation }) => {
@@ -13,6 +22,8 @@ const CreatePostsScreen = ({ navigation }) => {
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [photo, setPhoto] = useState("");
   const [location, setLocation] = useState(null);
+  const [place, setPlace] = useState("");
+  const [photoLocationName, setPhotoLocationName] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -30,6 +41,13 @@ const CreatePostsScreen = ({ navigation }) => {
       if (status !== "granted") {
         console.log("Permission to access location was denied");
       }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setLocation(coords);
     })();
   }, []);
 
@@ -45,19 +63,20 @@ const CreatePostsScreen = ({ navigation }) => {
       const { uri } = await cameraRef.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
 
-      let location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setLocation(coords);
-
       setPhoto(uri);
     }
   };
   const sendPhoto = () => {
-    navigation.navigate("Posts", { photo });
+    navigation.navigate("Posts", { photo, place, photoLocationName });
     setPhoto("");
+    setPlace("");
+    setPhotoLocationName("");
+  };
+
+  const deletePost = () => {
+    setPhoto("");
+    setPlace("");
+    setPhotoLocationName("");
   };
 
   return (
@@ -96,11 +115,55 @@ const CreatePostsScreen = ({ navigation }) => {
           <View>
             <Image source={{ uri: photo }} style={styles.takePhoto} />
           </View>
+          <View style={styles.form}>
+            <View>
+              <TextInput
+                value={place}
+                onChangeText={(value) => setPlace(value)}
+                style={styles.inputName}
+                placeholder="Name..."
+              />
+            </View>
+            <View style={{ flexDirection: "row", marginTop: 32 }}>
+              <EvilIcons name="location" size={24} color="black" />
+
+              <TextInput
+                value={photoLocationName}
+                onChangeText={(value) => setPhotoLocationName(value)}
+                style={styles.inputLocation}
+                placeholder="locality..."
+              />
+            </View>
+          </View>
+
           <TouchableOpacity
-            style={styles.containerSendPhoto}
+            style={{
+              ...styles.containerSendPhoto,
+              backgroundColor:
+                place !== "" && photoLocationName !== ""
+                  ? "#FF6C00"
+                  : "#F6F6F6",
+            }}
             onPress={sendPhoto}
           >
-            <Text style={styles.publish}>Publish</Text>
+            <Text
+              style={{
+                ...styles.publish,
+                color:
+                  place !== "" && photoLocationName !== ""
+                    ? "#fff"
+                    : "rgba(189, 189, 189, 1)",
+              }}
+            >
+              Publish
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={deletePost}
+            style={styles.containerIconDelete}
+          >
+            <AntDesign name="delete" size={22} color={"#BDBDBD"} />
           </TouchableOpacity>
         </View>
       )}
@@ -206,10 +269,42 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: "#FFFFFF",
   },
+  /**Form */
+  inputName: {
+    marginTop: 48,
+    borderBottomWidth: 1,
+    borderColor: "#E8E8E8",
+    paddingBottom: 15,
+    fontSize: 16,
+    lineHeight: 19,
+  },
+
+  inputLocation: {
+    width: "100%",
+    borderBottomWidth: 1,
+    borderColor: "#E8E8E8",
+    paddingBottom: 15,
+    fontSize: 16,
+    lineHeight: 19,
+    paddingLeft: 8,
+  },
+
+  containerIconDelete: {
+    width: 70,
+
+    marginTop: Platform.OS === "ios" ? "45%" : "40%",
+    marginBottom: 30,
+    marginRight: "auto",
+    marginLeft: "auto",
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 20,
+    backgroundColor: "#F6F6F6",
+    color: "#DADADA",
+  },
 
   icon: {
     fontSize: 30,
-    color: "#BDBDBD",
   },
 
   containerSendPhoto: {
@@ -217,7 +312,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 51,
     marginTop: 32,
-    backgroundColor: "#FF6C00",
+    // backgroundColor: "#FF6C00",
     borderRadius: 100,
   },
   publish: {

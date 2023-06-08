@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 
 import { EvilIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -27,19 +34,25 @@ const PostsScreen = ({ route, navigation }) => {
         renderItem={({ item }) => (
           <View style={{ marginBottom: 10 }}>
             <Image source={{ uri: item.photo }} style={styles.takePhoto} />
-            <View style={styles.containerIcon}>
-              <FontAwesome
-                name="comment-o"
-                size={24}
-                color="black"
-                onPress={commentsNavigate}
-              />
-              <EvilIcons
-                name="location"
-                size={24}
-                color="black"
-                onPress={mapNavigate}
-              />
+            <View>
+              <View>
+                <Text>{item.place}</Text>
+              </View>
+              <View style={styles.containerIcon}>
+                <FontAwesome
+                  name="comment-o"
+                  size={24}
+                  color="black"
+                  onPress={commentsNavigate}
+                  sx={{ marginRight: "auto" }}
+                />
+                <TouchableOpacity onPress={mapNavigate}>
+                  <EvilIcons name="location" size={20} color="#BDBDBD" />
+                  <Text style={styles.nameLocation}>
+                    {item.photoLocationName}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         )}
@@ -56,15 +69,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   takePhoto: {
-    // borderWidth: 1,
-    // borderColor: "#fff",
     width: 343,
     height: 240,
     borderRadius: 8,
+    marginBottom: 8,
   },
   containerIcon: {
+    marginTop: 11,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+  },
+  nameLocation: {
+    fontSize: 16,
+    lineHeight: 19,
+    textDecorationLine: "underline",
   },
 });
