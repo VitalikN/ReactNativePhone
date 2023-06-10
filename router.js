@@ -13,6 +13,7 @@ import CommentsScreen from "./Screens/mainScreen/CommentsScreen";
 
 const MainStack = createStackNavigator();
 const MainTab = createStackNavigator();
+
 const useRouter = (isAuth) => {
   if (!isAuth) {
     return (

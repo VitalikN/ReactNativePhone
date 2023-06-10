@@ -14,6 +14,9 @@ import {
   Keyboard,
 } from "react-native";
 
+import { useDispatch } from "react-redux";
+import { authSingInUser } from "../../redux/auth/authOperations";
+
 const initialState = {
   email: "",
   password: "",
@@ -23,14 +26,20 @@ const LoginScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
+  const dispatch = useDispatch();
+
   const keyboardHide = () => {
     setIsKeyboardVisible(false);
     Keyboard.dismiss();
   };
   const handleSubmit = () => {
     keyboardHide();
+    console.log("======authSingInUser ", state);
+
+    dispatch(authSingInUser(state));
+
     setState(initialState);
-    console.log(state);
+    // console.log("authSingInUser", );
   };
 
   return (

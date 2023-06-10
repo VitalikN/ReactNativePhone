@@ -14,6 +14,9 @@ import {
   Keyboard,
 } from "react-native";
 
+import { useDispatch, useSelector } from "react-redux";
+import { authSingUpUser } from "../../redux/auth/authOperations";
+
 const initialState = {
   login: "",
   email: "",
@@ -21,19 +24,22 @@ const initialState = {
 };
 
 const RegistrationScreen = ({ navigation }) => {
-  const [state, setState] = useState(initialState);
+  const [auth, setAuth] = useState(initialState);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const [passwordSecured, setPasswordSecured] = useState(true);
+
+  const dispatch = useDispatch();
 
   const keyboardHide = () => {
     setIsKeyboardVisible(false);
     Keyboard.dismiss();
   };
   const handleSubmit = () => {
+    dispatch(authSingUpUser(auth));
+
     keyboardHide();
-    setState(initialState);
-    console.log(state);
+    setAuth(initialState);
   };
 
   return (
@@ -67,10 +73,10 @@ const RegistrationScreen = ({ navigation }) => {
                 <TextInput
                   style={styles.input}
                   placeholder="login"
-                  value={state.login}
+                  value={auth.login}
                   onFocus={() => setIsKeyboardVisible(true)}
                   onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, login: value }))
+                    setAuth((prevState) => ({ ...prevState, login: value }))
                   }
                   require
                 />
@@ -79,9 +85,9 @@ const RegistrationScreen = ({ navigation }) => {
                 <TextInput
                   style={styles.input}
                   placeholder="Email address"
-                  value={state.email}
+                  value={auth.email}
                   onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, email: value }))
+                    setAuth((prevState) => ({ ...prevState, email: value }))
                   }
                   require
                   onFocus={() => setIsKeyboardVisible(true)}
@@ -91,9 +97,9 @@ const RegistrationScreen = ({ navigation }) => {
                 <TextInput
                   style={styles.input}
                   placeholder="Password"
-                  value={state.password}
+                  value={auth.password}
                   onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, password: value }))
+                    setAuth((prevState) => ({ ...prevState, password: value }))
                   }
                   secureTextEntry={true}
                   require
@@ -109,7 +115,7 @@ const RegistrationScreen = ({ navigation }) => {
               </TouchableOpacity>
 
               <Text style={styles.textSign}>
-                Already have an account?{" "}
+                Already have an account?
                 <Text onPress={() => navigation.navigate("Login")}>
                   Sign in
                 </Text>
