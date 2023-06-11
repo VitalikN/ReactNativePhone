@@ -14,8 +14,8 @@ import {
   Keyboard,
 } from "react-native";
 
-import { useDispatch, useSelector } from "react-redux";
-import { authSingUpUser } from "../../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
+import { authSignUpUser } from "../../redux/auth/authOperations";
 
 const initialState = {
   login: "",
@@ -36,7 +36,7 @@ const RegistrationScreen = ({ navigation }) => {
     Keyboard.dismiss();
   };
   const handleSubmit = () => {
-    dispatch(authSingUpUser(auth));
+    dispatch(authSignUpUser(auth));
 
     keyboardHide();
     setAuth(initialState);

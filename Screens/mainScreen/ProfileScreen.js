@@ -1,13 +1,32 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useDispatch } from "react-redux";
 
-// import { Feather } from "@expo/vector-icons";
-// <Feather name="arrow-left" size={24} color="black" />;
+import { MaterialIcons } from "@expo/vector-icons";
+
+import { authSignOutUser } from "../../redux/auth/authOperations";
 
 const ProfileScreen = () => {
+  const dispatch = useDispatch();
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
   return (
     <View style={styles.container}>
-      <Text>ProfileScreen</Text>
+      <View>
+        <Text>ProfileScreen</Text>
+      </View>
+      <TouchableOpacity
+        onPress={signOut}
+        activeOpacity={0.7}
+        style={{
+          margin: 30,
+          justifyContent: "center",
+        }}
+      >
+        <MaterialIcons name="logout" size={24} color="#BDBDBD" />
+      </TouchableOpacity>
     </View>
   );
 };

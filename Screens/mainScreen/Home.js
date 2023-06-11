@@ -1,3 +1,5 @@
+import { StyleSheet, TouchableOpacity } from "react-native";
+import { useDispatch } from "react-redux";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import { Feather } from "@expo/vector-icons";
@@ -8,11 +10,17 @@ import PostsScreen from "./PostsScreen";
 import CreatePostsScreen from "./CreatePostsScreen";
 import ProfileScreen from "./ProfileScreen";
 
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { authSignOutUser } from "../../redux/auth/authOperations";
 
 const MainTab = createBottomTabNavigator();
 
 const Home = () => {
+  const dispatch = useDispatch();
+ 
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
+
   return (
     <MainTab.Navigator>
       <MainTab.Screen
@@ -22,7 +30,11 @@ const Home = () => {
           title: "Posts",
 
           headerRight: () => (
-            <TouchableOpacity activeOpacity={0.7} style={styles.logout}>
+            <TouchableOpacity
+              onPress={signOut}
+              activeOpacity={0.7}
+              style={styles.logout}
+            >
               <MaterialIcons name="logout" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),

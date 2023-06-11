@@ -15,7 +15,7 @@ import {
 } from "react-native";
 
 import { useDispatch } from "react-redux";
-import { authSingInUser } from "../../redux/auth/authOperations";
+import { authSignInUser } from "../../redux/auth/authOperations";
 
 const initialState = {
   email: "",
@@ -34,12 +34,12 @@ const LoginScreen = ({ navigation }) => {
   };
   const handleSubmit = () => {
     keyboardHide();
-    console.log("======authSingInUser ", state);
+    console.log("======authSignInUser ", state);
 
-    dispatch(authSingInUser(state));
+    dispatch(authSignInUser(state));
 
     setState(initialState);
-    // console.log("authSingInUser", );
+    // console.log("authSignInUser", );
   };
 
   return (
@@ -97,7 +97,7 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={styles.btnText}>Sign in</Text>
               </TouchableOpacity>
               <Text style={styles.textSign}>
-                Don't have an account?{" "}
+                Don't have an account?
                 <Text onPress={() => navigation.navigate("Registration")}>
                   Register
                 </Text>
