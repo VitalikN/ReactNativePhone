@@ -34,12 +34,10 @@ const LoginScreen = ({ navigation }) => {
   };
   const handleSubmit = () => {
     keyboardHide();
-    console.log("======authSignInUser ", state);
 
     dispatch(authSignInUser(state));
 
     setState(initialState);
-    // console.log("authSignInUser", );
   };
 
   return (

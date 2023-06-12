@@ -1,4 +1,13 @@
 import React, { useEffect, useState } from "react";
+
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase/config";
+
+import { useSelector } from "react-redux";
+
+import { EvilIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+
 import {
   View,
   Text,
@@ -8,32 +17,44 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import { EvilIcons } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-
 const PostsScreen = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
 
+  const { login, userEmail } = useSelector((state) => state.auth);
+
+  const getAllPosts = async () => {
+    const dbRef = await collection(db, "posts");
+    onSnapshot(dbRef, (docSnap) =>
+      setPosts(docSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+    );
+  };
+
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
+    (async () => {
+      await getAllPosts();
+    })();
   }, [route.params]);
 
-  const mapNavigate = () => {
-    navigation.navigate("MapScreen");
-  };
-  const commentsNavigate = () => {
-    navigation.navigate("CommentsScreen");
-  };
   return (
     <View style={styles.container}>
+      <View>
+        <View>
+          <View style={{ marginLeft: 2, marginTop: 4 }}>
+            <Text>{login}</Text>
+            <Text>{userEmail}</Text>
+          </View>
+        </View>
+      </View>
+
       <FlatList
         data={posts}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={{ marginBottom: 10 }}>
-            <Image source={{ uri: item.photo }} style={styles.takePhoto} />
+            <Image
+              source={{ uri: item.photoStorage }}
+              style={styles.takePhoto}
+            />
             <View>
               <View>
                 <Text>{item.place}</Text>
@@ -43,10 +64,16 @@ const PostsScreen = ({ route, navigation }) => {
                   name="comment-o"
                   size={24}
                   color="black"
-                  onPress={commentsNavigate}
+                  onPress={() => navigation.navigate("CommentsScreen")}
                   sx={{ marginRight: "auto" }}
                 />
-                <TouchableOpacity onPress={mapNavigate}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("MapScreen", {
+                      location: item.location,
+                    });
+                  }}
+                >
                   <EvilIcons name="location" size={20} color="#BDBDBD" />
                   <Text style={styles.nameLocation}>
                     {item.photoLocationName}

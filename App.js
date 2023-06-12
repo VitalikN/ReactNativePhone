@@ -6,10 +6,6 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import Main from "./components/Main";
 
-// import Main from "./components/Main";
-
-//
-
 const App = () => {
   const [fontsLoaded] = useFonts({
     "R-bold": require("./assets/fonts/Roboto-Bold.ttf"),

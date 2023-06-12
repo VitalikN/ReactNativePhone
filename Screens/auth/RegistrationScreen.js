@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   ImageBackground,
@@ -27,7 +27,7 @@ const RegistrationScreen = ({ navigation }) => {
   const [auth, setAuth] = useState(initialState);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
-  const [passwordSecured, setPasswordSecured] = useState(true);
+  // const [passwordSecured, setPasswordSecured] = useState(true);
 
   const dispatch = useDispatch();
 

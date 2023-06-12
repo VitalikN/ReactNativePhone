@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   View,
@@ -8,22 +8,30 @@ import {
   TextInput,
   StyleSheet,
 } from "react-native";
-import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
+import { Camera } from "expo-camera";
+
+import { useSelector } from "react-redux";
 
 import { EvilIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+
+import { collection, addDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../../firebase/config";
 
 const CreatePostsScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [photo, setPhoto] = useState("");
-  const [location, setLocation] = useState(null);
   const [place, setPlace] = useState("");
+  const [location, setLocation] = useState(null);
   const [photoLocationName, setPhotoLocationName] = useState("");
+
+  const { userId, login } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -42,14 +50,66 @@ const CreatePostsScreen = ({ navigation }) => {
         console.log("Permission to access location was denied");
       }
 
-      let location = await Location.getCurrentPositionAsync({});
+      let locationRes = await Location.getCurrentPositionAsync({});
       const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: locationRes.coords.latitude,
+        longitude: locationRes.coords.longitude,
       };
       setLocation(coords);
     })();
   }, []);
+
+  const takePhoto = async () => {
+    if (cameraRef) {
+      const { uri } = await cameraRef.takePictureAsync();
+
+      await MediaLibrary.createAssetAsync(uri);
+
+      setPhoto(uri);
+    }
+  };
+
+  const updatePhotoToServer = async (photoImg) => {
+    const response = await fetch(photoImg);
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    const storageRef = await ref(storage, `photoImg/${uniquePostId}`);
+    const uploadPhoto = await uploadBytes(storageRef, file);
+    const takePhoto = await getDownloadURL(uploadPhoto.ref);
+
+    return takePhoto;
+  };
+  const sendPhoto = async () => {
+    navigation.navigate("Posts", {
+      photo,
+      place,
+      photoLocationName,
+      location,
+    });
+    await uploadPostToServer(photo);
+    setPhoto("");
+    setPlace("");
+    setPhotoLocationName("");
+  };
+
+  const uploadPostToServer = async (myPhoto) => {
+    const photoStorage = await updatePhotoToServer(myPhoto);
+
+    try {
+      const docRef = await addDoc(collection(db, "posts"), {
+        photoStorage,
+        location,
+        place,
+        userId,
+        login,
+        photoLocationName,
+      });
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  };
 
   if (hasPermission === null) {
     return <View />;
@@ -57,21 +117,6 @@ const CreatePostsScreen = ({ navigation }) => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
-
-  const takePhoto = async () => {
-    if (cameraRef) {
-      const { uri } = await cameraRef.takePictureAsync();
-      await MediaLibrary.createAssetAsync(uri);
-
-      setPhoto(uri);
-    }
-  };
-  const sendPhoto = () => {
-    navigation.navigate("Posts", { photo, place, photoLocationName });
-    setPhoto("");
-    setPlace("");
-    setPhotoLocationName("");
-  };
 
   const deletePost = () => {
     setPhoto("");
