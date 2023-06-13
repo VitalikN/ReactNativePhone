@@ -89,6 +89,7 @@ const CreatePostsScreen = ({ navigation }) => {
       location,
     });
     await uploadPostToServer(photo);
+
     setPhoto("");
     setPlace("");
     setPhotoLocationName("");
@@ -123,7 +124,6 @@ const CreatePostsScreen = ({ navigation }) => {
     setPlace("");
     setPhotoLocationName("");
   };
-
   return (
     <View style={styles.container}>
       {photo === "" ? (

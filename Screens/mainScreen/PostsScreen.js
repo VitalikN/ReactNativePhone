@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/config";
-
-import { useSelector } from "react-redux";
+import { collection, onSnapshot } from "firebase/firestore";
 
 import { EvilIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -16,6 +14,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
+import { useSelector } from "react-redux";
 
 const PostsScreen = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -37,13 +36,9 @@ const PostsScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View>
-        <View>
-          <View style={{ marginLeft: 2, marginTop: 4 }}>
-            <Text>{login}</Text>
-            <Text>{userEmail}</Text>
-          </View>
-        </View>
+      <View style={{ flexDirection: "row" }}>
+        <Text style={styles.textLogin}>{login}</Text>
+        <Text style={styles.textEmail}>{userEmail}</Text>
       </View>
 
       <FlatList
@@ -57,28 +52,45 @@ const PostsScreen = ({ route, navigation }) => {
             />
             <View>
               <View>
-                <Text>{item.place}</Text>
+                {posts.length !== 0 && (
+                  <Text style={styles.placeTitle}>{item.place}</Text>
+                )}
               </View>
               <View style={styles.containerIcon}>
                 <FontAwesome
                   name="comment-o"
                   size={24}
                   color="black"
-                  onPress={() => navigation.navigate("CommentsScreen")}
+                  onPress={() =>
+                    navigation.navigate("CommentsScreen", {
+                      postId: item.id,
+                      photo: item.photoStorage,
+                    })
+                  }
                   sx={{ marginRight: "auto" }}
                 />
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate("MapScreen", {
-                      location: item.location,
-                    });
-                  }}
-                >
-                  <EvilIcons name="location" size={20} color="#BDBDBD" />
-                  <Text style={styles.nameLocation}>
-                    {item.photoLocationName}
-                  </Text>
-                </TouchableOpacity>
+
+                <View>
+                  {posts.length !== 0 && (
+                    <TouchableOpacity
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                      onPress={() => {
+                        navigation.navigate("MapScreen", {
+                          location: item.location,
+                        });
+                      }}
+                    >
+                      <EvilIcons
+                        name="location"
+                        size={20}
+                        color="rgba(33, 33, 33, 0.8)"
+                      />
+                      <Text style={styles.nameLocation}>
+                        {item.photoLocationName}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
             </View>
           </View>
@@ -91,6 +103,7 @@ export default PostsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#ffffff",
@@ -110,5 +123,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     textDecorationLine: "underline",
+    marginLeft: 8,
+  },
+
+  textLogin: {
+    fontWeight: 700,
+    fontSize: 13,
+    lineHeight: 15,
+    color: "#212121",
+    marginTop: 8,
+    marginRight: 10,
+  },
+  textEmail: {
+    fontWeight: 400,
+    fontSize: 11,
+    lineHeight: 13,
+    marginTop: 8,
+
+    color: "rgba(33, 33, 33, 0.8)",
+  },
+  placeTitle: {
+    color: "#212121",
+    fontWeight: 500,
+    fontSize: 16,
+    lineHeight: 19,
   },
 });
