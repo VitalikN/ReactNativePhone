@@ -36,7 +36,7 @@ const PostsScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", marginBottom: 30, marginTop: 20 }}>
         <Text style={styles.textLogin}>{login}</Text>
         <Text style={styles.textEmail}>{userEmail}</Text>
       </View>
@@ -59,7 +59,7 @@ const PostsScreen = ({ route, navigation }) => {
               <View style={styles.containerIcon}>
                 <FontAwesome
                   name="comment-o"
-                  size={24}
+                  size={20}
                   color="black"
                   onPress={() =>
                     navigation.navigate("CommentsScreen", {
